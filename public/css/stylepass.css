@@ -1,0 +1,20 @@
+*{
+    margin:0;
+    font-size: 20px;
+}
+body {
+    background-image: linear-gradient(to right, rgb(240, 154, 41) ,rgb(42, 42, 42));
+    color: ghostwhite;
+    margin-top: 1em;
+}
+li{
+ 
+    list-style: none;
+}
+a {
+    font-size: 2em;
+    color: black;
+}
+a:hover{
+    color: chartreuse;
+}
