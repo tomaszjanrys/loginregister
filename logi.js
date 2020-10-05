@@ -4,8 +4,12 @@ const app = express();
 const bcrypt = require('bcryptjs');
 const port = 5555;
 const bodyParser = require('body-parser');
-const initPass = require('./passconfig');
+/////////////////Passport/////////////////////////////
 const passport = require('passport');
+const initPass = require('./passconfig');
+initPass(passport)
+////////////////////////End pass///////////////////////////
+
 // URLENCODED  Analizuje przychodzące żądania za pomocą ładunków zakodowanych 
 //w formacie urlencod i opiera się na analizatorze składni treści.
 const urlencodedParser = bodyParser.urlencoded({extended:false})
