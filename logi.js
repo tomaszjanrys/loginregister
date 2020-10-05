@@ -1,3 +1,6 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 const { urlencoded } = require('express');
 const express = require('express');
 const app = express();
@@ -5,9 +8,16 @@ const bcrypt = require('bcryptjs');
 const port = 5555;
 const bodyParser = require('body-parser');
 /////////////////Passport/////////////////////////////
+const flash = require('express-flash');
+const session = require('express-session')
 const passport = require('passport');
 const initPass = require('./passconfig');
-initPass(passport)
+const { initialize } = require('passport');
+initPass(
+  passport,
+  email => users.find(user => user.email === email),
+  id => users.find(user => user.id === id)
+)
 ////////////////////////End pass///////////////////////////
 
 // URLENCODED  Analizuje przychodzące żądania za pomocą ładunków zakodowanych 
@@ -25,6 +35,14 @@ app.use(express.json())
 
 app.set('view engine', 'ejs');
 app.set('views','./views');
+app.use(flash());
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}))
+app.use(passport.initialize())
+app.use(passport.session())
 ///////////////////////////////////
 
 app.get('/',(req,res)=>{
@@ -34,9 +52,11 @@ app.get('/',(req,res)=>{
 app.get('/login',(req,res)=>{
     res.render('login')
 });
-app.post('/login', (req,res)=>{
-
-});
+app.post('/login',passport.authenticate('local',{
+  successRedirect: '/',
+  failureRedirect: '/login',
+  failureFlash: true
+}))
 /////////////Register///////////
 app.get('/register',(req,res)=>{
     res.render('register')
@@ -48,7 +68,7 @@ app.post('/register', urlencodedParser, async (req, res) => {
       users.push({
         id: Date.now().toString(),
         //urlencoded
-        name: req.body.username,
+        name: req.body.user,
         email: req.body.email,
         password: hashedPassword
       })
