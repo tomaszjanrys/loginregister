@@ -13,6 +13,10 @@ const session = require('express-session')
 const passport = require('passport');
 const initPass = require('./passconfig');
 const { initialize } = require('passport');
+const {check , validationResult} = require('express-validator');
+const optionCheck = [
+  check('user','Min 3 znaki').exists().isLength({min:3})
+] 
 initPass(
   passport,
   email => users.find(user => user.email === email),
@@ -61,8 +65,13 @@ app.post('/login',passport.authenticate('local',{
 app.get('/register',(req,res)=>{
     res.render('register')
 });
-app.post('/register', urlencodedParser, async (req, res) => {
-    try {
+app.post('/register', urlencodedParser,optionCheck, async (req, res) => {
+  const er = validationResult(req);
+  if(!er.isEmpty()){
+    alert = er.array()
+    console.log(alert)
+  } 
+  try {
       //hashuje wpisany password przez user
       const hashedPassword = await bcrypt.hash(req.body.password, 10)
       users.push({
